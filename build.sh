@@ -28,15 +28,28 @@ compile() {
 
 package() {
     compile
-    echo "Packaging executable JAR..."
+    echo "Extracting dependency libraries for self-contained JAR..."
+    mkdir -p build/deps
+    for f in *.jar; do
+        if [ -f "$f" ]; then
+            echo "Extracting $f..."
+            (cd build/deps && jar xf ../../"$f")
+        fi
+    done
+    
+    # Remove META-INF signature and manifest files to prevent security/digest validation errors
+    rm -rf build/deps/META-INF/*.SF build/deps/META-INF/*.DSA build/deps/META-INF/*.RSA build/deps/META-INF/MANIFEST.MF 2>/dev/null || true
+    
+    # Copy all extracted dependencies into compile output directory
+    cp -r build/deps/* build/classes/ 2>/dev/null || true
+    
+    echo "Packaging self-contained executable JAR..."
     mkdir -p dist
-    mkdir -p build
     # Create manifest file temporarily
     echo "Main-Class: com.synaptix.isp.Home" > build/manifest.mf
-    echo "Class-Path: ../flatlaf-3.1.1.jar ../postgresql-42.6.0.jar ../rs2xml.jar ../itext-2.1.7.jar ../HikariCP-4.0.3.jar ../slf4j-api-1.7.30.jar ../slf4j-simple-1.7.30.jar ../jfreechart-1.5.3.jar ../javax.mail-1.6.2.jar ../activation-1.1.1.jar" >> build/manifest.mf
     
     jar cfm dist/ISP.jar build/manifest.mf -C build/classes .
-    echo "JAR package created at dist/ISP.jar"
+    echo "JAR package created successfully at dist/ISP.jar (Self-contained executable)"
 }
 
 run() {
