@@ -64,6 +64,7 @@ private javax.swing.JComboBox<String> comboFilterPlan;
             jTable1.setModel(tableModel);
             rowSorter = new TableRowSorter<>(tableModel);
             jTable1.setRowSorter(rowSorter);
+            UIUtils.styleTable(jTable1);
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -73,6 +74,7 @@ private javax.swing.JComboBox<String> comboFilterPlan;
         try{
             rs = PlanDAO.getAllPlans(conn);
             jTable2.setModel(DbUtils.resultSetToTableModel(rs));
+            UIUtils.styleTable(jTable2);
         }catch(Exception e){
             e.printStackTrace();
         }

@@ -49,6 +49,7 @@ TableRowSorter<TableModel> rowSorter;
             jTable1.setModel(tableModel);
             rowSorter = new TableRowSorter<>(tableModel);
             jTable1.setRowSorter(rowSorter);
+            UIUtils.styleTable(jTable1);
         }catch(Exception e){
             e.printStackTrace();
         }

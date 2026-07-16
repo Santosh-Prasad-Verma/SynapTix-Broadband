@@ -304,11 +304,7 @@ ResultSet rs;
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        try {
-            com.formdev.flatlaf.FlatLightLaf.setup();
-        } catch (Exception ex) {
-            java.util.logging.Logger.getLogger(Home.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
+        UIUtils.applyPremiumTheme();
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
