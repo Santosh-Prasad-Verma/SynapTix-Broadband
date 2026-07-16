@@ -406,7 +406,19 @@ private double lastUlSim = 20.0;
 
     private void setupDashboardLayout() {
         jPanel1.removeAll();
-        jPanel1.setLayout(new java.awt.GridBagLayout());
+        jPanel1.setLayout(new java.awt.BorderLayout(20, 20));
+        jPanel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 25, 20, 25));
+
+        // Style header Date & Time text fields to be flat and borderless
+        dateLab.setBorder(null);
+        dateLab.setOpaque(false);
+        dateLab.setBackground(new java.awt.Color(255, 255, 255));
+        dateLab.setFocusable(false);
+        
+        timeLab.setBorder(null);
+        timeLab.setOpaque(false);
+        timeLab.setBackground(new java.awt.Color(255, 255, 255));
+        timeLab.setFocusable(false);
 
         // Stats Panel at top
         javax.swing.JPanel statsPanel = new javax.swing.JPanel();
@@ -420,23 +432,15 @@ private double lastUlSim = 20.0;
         statsPanel.add(cardCustomers);
         statsPanel.add(cardRevenue);
         statsPanel.add(cardComplaints);
+        
+        jPanel1.add(statsPanel, java.awt.BorderLayout.NORTH);
 
-        // Bottom Section Panel
-        javax.swing.JPanel bottomPanel = new javax.swing.JPanel();
-        bottomPanel.setOpaque(false);
-        bottomPanel.setLayout(new java.awt.GridBagLayout());
-
-        java.awt.GridBagConstraints bottomGbc = new java.awt.GridBagConstraints();
-        bottomGbc.fill = java.awt.GridBagConstraints.NONE;
-        bottomGbc.anchor = java.awt.GridBagConstraints.CENTER;
-        bottomGbc.weighty = 1.0;
-
-        // Left side: jPanel2 (Navigation Panel) - Do not stretch
-        bottomGbc.gridx = 0;
-        bottomGbc.gridy = 0;
-        bottomGbc.weightx = 0.4;
-        bottomGbc.insets = new java.awt.Insets(0, 0, 0, 10);
-        bottomPanel.add(jPanel2, bottomGbc);
+        // Left side: jPanel2 (Navigation Panel) - wrapped to prevent vertical stretching
+        javax.swing.JPanel leftWrapper = new javax.swing.JPanel(new java.awt.BorderLayout());
+        leftWrapper.setOpaque(false);
+        leftWrapper.add(jPanel2, java.awt.BorderLayout.NORTH);
+        
+        jPanel1.add(leftWrapper, java.awt.BorderLayout.WEST);
 
         // Right side: Tabbed Pane container
         javax.swing.JTabbedPane tabbedPane = new javax.swing.JTabbedPane();
@@ -590,7 +594,7 @@ private double lastUlSim = 20.0;
 
         systemUtilitiesPanel.add(csvImportCard);
 
-        // Card 2: Security & Account Utilities
+        // Card 3: Security & Account Utilities
         javax.swing.JPanel securityCard = new javax.swing.JPanel();
         securityCard.setBackground(java.awt.Color.WHITE);
         securityCard.setBorder(javax.swing.BorderFactory.createTitledBorder(
@@ -663,30 +667,8 @@ private double lastUlSim = 20.0;
         ));
         tabContainer.setLayout(new java.awt.BorderLayout());
         tabContainer.add(tabbedPane, java.awt.BorderLayout.CENTER);
-        tabContainer.setPreferredSize(new java.awt.Dimension(400, 300));
-
-        bottomGbc.gridx = 1;
-        bottomGbc.weightx = 0.6;
-        bottomGbc.fill = java.awt.GridBagConstraints.BOTH;
-        bottomGbc.insets = new java.awt.Insets(0, 10, 0, 0);
-        bottomPanel.add(tabContainer, bottomGbc);
-
-        // Add statsPanel and bottomPanel to main jPanel1
-        java.awt.GridBagConstraints mainGbc = new java.awt.GridBagConstraints();
-        mainGbc.fill = java.awt.GridBagConstraints.HORIZONTAL; // ONLY horizontal stretch for cards
-        mainGbc.weightx = 1.0;
-        mainGbc.weighty = 0.0; // no vertical stretch for cards
-
-        mainGbc.gridx = 0;
-        mainGbc.gridy = 0;
-        mainGbc.insets = new java.awt.Insets(20, 20, 10, 20);
-        jPanel1.add(statsPanel, mainGbc);
-
-        mainGbc.gridy = 1;
-        mainGbc.weighty = 1.0; // bottom section takes all remaining space
-        mainGbc.fill = java.awt.GridBagConstraints.BOTH; // stretch both ways for bottom row
-        mainGbc.insets = new java.awt.Insets(10, 20, 20, 20);
-        jPanel1.add(bottomPanel, mainGbc);
+        
+        jPanel1.add(tabContainer, java.awt.BorderLayout.CENTER);
 
         jPanel1.revalidate();
         jPanel1.repaint();
