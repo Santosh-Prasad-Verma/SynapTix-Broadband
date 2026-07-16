@@ -1,0 +1,20 @@
+# Build outputs
+/build/
+/dist/
+/target/
+*.class
+
+# Log files
+*.log
+
+# Temp files
+*.tmp
+/Invoice_*_temp.pdf
+
+# OS/IDE files
+.DS_Store
+.idea/
+.vscode/
+*.suo
+*.user
+nbproject/private/
