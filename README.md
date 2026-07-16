@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="icons/SynapTix-icon.png" width="120" height="120" alt="SynapTix Broadband Logo">
+</p>
+
 # 🌐 SynapTix Broadband — ISP Management System
 
 [![Java Version](https://img.shields.io/badge/Java-11%2B-blue?logo=java&logoColor=white&style=for-the-badge)](https://www.oracle.com/java/)
@@ -67,7 +71,7 @@ docker exec -i isp-postgres psql -U postgres -d isp < isp_postgres.sql
 ---
 
 ### Step 2: Configure SMTP and Database Properties
-Open [src/db.properties](file:///home/tarun/Videos/ISP-Java/src/db.properties) and populate the database connections and your Gmail App credentials:
+Open [src/main/resources/db.properties](file:///home/tarun/Videos/ISP-Java/src/main/resources/db.properties) and populate the database connections and your Gmail App credentials:
 ```properties
 db.url=jdbc:postgresql://localhost:5435/isp
 db.username=postgres
