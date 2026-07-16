@@ -38,4 +38,12 @@ public class EmployeeDAO {
         pst.setString(1, contact);
         return pst.executeQuery();
     }
+
+    public static void deleteEmployee(Connection conn, String id) throws Exception {
+        String sql = "DELETE FROM employee WHERE ID=?";
+        try (PreparedStatement pst = conn.prepareStatement(sql)) {
+            pst.setInt(1, Integer.parseInt(id));
+            pst.execute();
+        }
+    }
 }

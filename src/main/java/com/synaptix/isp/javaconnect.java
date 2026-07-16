@@ -8,12 +8,12 @@ import com.zaxxer.hikari.HikariDataSource;
 
 public class javaconnect {
     private static HikariDataSource dataSource;
+    private static String url = "jdbc:postgresql://localhost:5435/isp";
+    private static String user = "postgres";
+    private static String password = "postgres";
 
     static {
         Properties prop = new Properties();
-        String url = "jdbc:postgresql://localhost:5435/isp";
-        String user = "postgres";
-        String password = "postgres";
 
         try (InputStream input = javaconnect.class.getClassLoader().getResourceAsStream("db.properties")) {
             if (input != null) {
@@ -46,6 +46,42 @@ public class javaconnect {
         }
     }
 
+    public static String getDbUrl() { return url; }
+    public static String getDbUser() { return user; }
+    public static String getDbPassword() { return password; }
+
+    public static class ConnectionParams {
+        public String host = "localhost";
+        public String port = "5435"; // match local port from default
+        public String dbName = "isp";
+    }
+
+    public static ConnectionParams getConnectionParams() {
+        ConnectionParams params = new ConnectionParams();
+        try {
+            if (url != null && url.startsWith("jdbc:postgresql://")) {
+                String clean = url.substring("jdbc:postgresql://".length());
+                String[] hostPortAndDb = clean.split("/");
+                if (hostPortAndDb.length > 0) {
+                    String hostPort = hostPortAndDb[0];
+                    if (hostPort.contains(":")) {
+                        String[] hp = hostPort.split(":");
+                        params.host = hp[0];
+                        params.port = hp[1];
+                    } else {
+                        params.host = hostPort;
+                    }
+                }
+                if (hostPortAndDb.length > 1) {
+                    params.dbName = hostPortAndDb[1].split("\\?")[0];
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return params;
+    }
+
     public static Connection ConnecrDb() {
         try {
             if (dataSource != null) {
@@ -57,3 +93,4 @@ public class javaconnect {
         return null;
     }
 }
+

@@ -1017,19 +1017,30 @@ private double lastUlSim = 20.0;
                 @Override
                 public void run() {
                     try {
-                        ProcessBuilder pb = new ProcessBuilder("pg_dump", "-h", "localhost", "-p", "5435", "-U", "postgres", "-d", "isp");
-                        pb.environment().put("PGPASSWORD", "postgres");
+                        javaconnect.ConnectionParams params = javaconnect.getConnectionParams();
+                        String pgPassword = javaconnect.getDbPassword();
+                        String pgUser = javaconnect.getDbUser();
+                        ProcessBuilder pb = new ProcessBuilder("pg_dump", "-h", params.host, "-p", params.port, "-U", pgUser, "-d", params.dbName);
+                        pb.environment().put("PGPASSWORD", pgPassword != null ? pgPassword : "");
                         pb.redirectOutput(fileToSave);
                         Process process = pb.start();
-                        int exitCode = process.waitFor();
-                        if (exitCode == 0) {
-                            javax.swing.JOptionPane.showMessageDialog(Admin.this, "Database backup created successfully!");
-                        } else {
-                            javax.swing.JOptionPane.showMessageDialog(Admin.this, "Backup failed with exit code: " + exitCode, "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-                        }
-                    } catch (Exception ex) {
+                        final int exitCode = process.waitFor();
+                        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                if (exitCode == 0) {
+                                    javax.swing.JOptionPane.showMessageDialog(Admin.this, "Database backup created successfully!");
+                                } else {
+                                    javax.swing.JOptionPane.showMessageDialog(Admin.this, "Backup failed with exit code: " + exitCode, "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                                }
+                            }
+                        });
+                    } catch (final Exception ex) {
                         ex.printStackTrace();
-                        javax.swing.JOptionPane.showMessageDialog(Admin.this, "Backup error: " + ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                javax.swing.JOptionPane.showMessageDialog(Admin.this, "Backup error: " + ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                            }
+                        });
                     }
                 }
             }).start();
@@ -1051,21 +1062,32 @@ private double lastUlSim = 20.0;
                     @Override
                     public void run() {
                         try {
-                            ProcessBuilder pb = new ProcessBuilder("psql", "-h", "localhost", "-p", "5435", "-U", "postgres", "-d", "isp");
-                            pb.environment().put("PGPASSWORD", "postgres");
+                            javaconnect.ConnectionParams params = javaconnect.getConnectionParams();
+                            String pgPassword = javaconnect.getDbPassword();
+                            String pgUser = javaconnect.getDbUser();
+                            ProcessBuilder pb = new ProcessBuilder("psql", "-h", params.host, "-p", params.port, "-U", pgUser, "-d", params.dbName);
+                            pb.environment().put("PGPASSWORD", pgPassword != null ? pgPassword : "");
                             pb.redirectInput(fileToOpen);
                             Process process = pb.start();
-                            int exitCode = process.waitFor();
-                            if (exitCode == 0) {
-                                javax.swing.JOptionPane.showMessageDialog(Admin.this, "Database restored successfully!");
-                                loadStatistics();
-                                loadPlanDistributionChart();
-                            } else {
-                                javax.swing.JOptionPane.showMessageDialog(Admin.this, "Restore failed with exit code: " + exitCode, "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-                            }
-                        } catch (Exception ex) {
+                            final int exitCode = process.waitFor();
+                            javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    if (exitCode == 0) {
+                                        javax.swing.JOptionPane.showMessageDialog(Admin.this, "Database restored successfully!");
+                                        loadStatistics();
+                                        loadPlanDistributionChart();
+                                    } else {
+                                        javax.swing.JOptionPane.showMessageDialog(Admin.this, "Restore failed with exit code: " + exitCode, "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                                    }
+                                }
+                            });
+                        } catch (final Exception ex) {
                             ex.printStackTrace();
-                            javax.swing.JOptionPane.showMessageDialog(Admin.this, "Restore error: " + ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                            javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    javax.swing.JOptionPane.showMessageDialog(Admin.this, "Restore error: " + ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                                }
+                            });
                         }
                     }
                 }).start();
@@ -1079,13 +1101,14 @@ private double lastUlSim = 20.0;
         fileChooser.setSelectedFile(new java.io.File("financial_report.csv"));
         int userSelection = fileChooser.showSaveDialog(this);
         if (userSelection == javax.swing.JFileChooser.APPROVE_OPTION) {
-            java.io.File fileToSave = fileChooser.getSelectedFile();
+            final java.io.File fileToSave = fileChooser.getSelectedFile();
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     String sql = "SELECT customer.ID, customer.Name, customer.Plan, plan.Cost " +
                                  "FROM customer LEFT JOIN plan ON customer.Plan = plan.PlanName";
-                    try (PreparedStatement pst = conn.prepareStatement(sql);
+                    try (java.sql.Connection localConn = javaconnect.ConnecrDb();
+                         PreparedStatement pst = localConn.prepareStatement(sql);
                          ResultSet rs = pst.executeQuery();
                          java.io.PrintWriter pw = new java.io.PrintWriter(new java.io.FileWriter(fileToSave))) {
                         
@@ -1115,10 +1138,18 @@ private double lastUlSim = 20.0;
                         pw.println("Total Customers Count," + count);
                         pw.println("Grand Total Revenue (inc. Tax)," + grandTotal);
                         
-                        javax.swing.JOptionPane.showMessageDialog(Admin.this, "Financial report exported successfully to " + fileToSave.getName());
-                    } catch (Exception ex) {
+                        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                javax.swing.JOptionPane.showMessageDialog(Admin.this, "Financial report exported successfully to " + fileToSave.getName());
+                            }
+                        });
+                    } catch (final Exception ex) {
                         ex.printStackTrace();
-                        javax.swing.JOptionPane.showMessageDialog(Admin.this, "Export error: " + ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                javax.swing.JOptionPane.showMessageDialog(Admin.this, "Export error: " + ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                            }
+                        });
                     }
                 }
             }).start();
@@ -1231,9 +1262,10 @@ private double lastUlSim = 20.0;
                 public void run() {
                     int successCount = 0;
                     int totalCount = 0;
-                    try {
+                    try (java.sql.Connection localConn = javaconnect.ConnecrDb()) {
+                        if (localConn == null) throw new Exception("Database connection offline");
                         String sql = "SELECT Name, email FROM customer";
-                        try (PreparedStatement pst = conn.prepareStatement(sql);
+                        try (PreparedStatement pst = localConn.prepareStatement(sql);
                              ResultSet rs = pst.executeQuery()) {
                             
                             while (rs.next()) {
@@ -1266,7 +1298,7 @@ private double lastUlSim = 20.0;
                             }
                         });
                         
-                    } catch (Exception ex) {
+                    } catch (final Exception ex) {
                         ex.printStackTrace();
                         java.awt.EventQueue.invokeLater(new Runnable() {
                             public void run() {
@@ -1314,43 +1346,54 @@ private double lastUlSim = 20.0;
                                  "  Plan = EXCLUDED.Plan, " +
                                  "  email = EXCLUDED.email";
                                  
-                    try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(file));
-                         PreparedStatement pst = conn.prepareStatement(sql)) {
-                        
-                        String line;
-                        boolean isHeader = true;
-                        while ((line = br.readLine()) != null) {
-                            if (line.trim().isEmpty()) continue;
-                            String[] fields = parseCSVLine(line);
-                            if (isHeader) {
-                                isHeader = false;
-                                try {
-                                    Integer.parseInt(cleanCSVField(fields[0]));
-                                } catch (NumberFormatException e) {
+                    java.sql.Connection localConn = null;
+                    try {
+                        localConn = javaconnect.ConnecrDb();
+                        if (localConn == null) throw new Exception("Database connection offline");
+                        localConn.setAutoCommit(false);
+
+                        try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(file));
+                             PreparedStatement pst = localConn.prepareStatement(sql)) {
+                            
+                            String line;
+                            boolean isHeader = true;
+                            while ((line = br.readLine()) != null) {
+                                if (line.trim().isEmpty()) continue;
+                                String[] fields = parseCSVLine(line);
+                                if (isHeader) {
+                                    isHeader = false;
+                                    try {
+                                        Integer.parseInt(cleanCSVField(fields[0]));
+                                    } catch (NumberFormatException e) {
+                                        continue;
+                                    }
+                                }
+                                
+                                if (fields.length < 7) {
+                                    failed++;
                                     continue;
                                 }
+                                
+                                try {
+                                    pst.setInt(1, Integer.parseInt(cleanCSVField(fields[0])));
+                                    pst.setString(2, cleanCSVField(fields[1]));
+                                    pst.setString(3, cleanCSVField(fields[2]));
+                                    pst.setString(4, cleanCSVField(fields[3]).toUpperCase()); // Sex
+                                    pst.setString(5, cleanCSVField(fields[4]).toUpperCase()); // Purpose
+                                    pst.setString(6, cleanCSVField(fields[5])); // Address
+                                    pst.setString(7, cleanCSVField(fields[6])); // Plan
+                                    pst.setString(8, fields.length >= 8 ? cleanCSVField(fields[7]) : ""); // email
+                                    pst.executeUpdate();
+                                    imported++;
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                    failed++;
+                                }
                             }
-                            
-                            if (fields.length < 7) {
-                                failed++;
-                                continue;
-                            }
-                            
-                            try {
-                                pst.setInt(1, Integer.parseInt(cleanCSVField(fields[0])));
-                                pst.setString(2, cleanCSVField(fields[1]));
-                                pst.setString(3, cleanCSVField(fields[2]));
-                                pst.setString(4, cleanCSVField(fields[3]).toUpperCase()); // Sex
-                                pst.setString(5, cleanCSVField(fields[4]).toUpperCase()); // Purpose
-                                pst.setString(6, cleanCSVField(fields[5])); // Address
-                                pst.setString(7, cleanCSVField(fields[6])); // Plan
-                                pst.setString(8, fields.length >= 8 ? cleanCSVField(fields[7]) : ""); // email
-                                pst.executeUpdate();
-                                imported++;
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                                failed++;
-                            }
+                            localConn.commit();
+                        } catch (Exception ex) {
+                            localConn.rollback();
+                            throw ex;
                         }
                         
                         final int finalImported = imported;
@@ -1364,13 +1407,18 @@ private double lastUlSim = 20.0;
                             }
                         });
                         
-                    } catch (Exception ex) {
+                    } catch (final Exception ex) {
                         ex.printStackTrace();
                         java.awt.EventQueue.invokeLater(new Runnable() {
                             public void run() {
                                 javax.swing.JOptionPane.showMessageDialog(Admin.this, "Import error: " + ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
                             }
                         });
+                    } finally {
+                        if (localConn != null) {
+                            try { localConn.setAutoCommit(true); } catch (Exception e) {}
+                            try { localConn.close(); } catch (Exception e) {}
+                        }
                     }
                 }
             }).start();
@@ -1397,45 +1445,56 @@ private double lastUlSim = 20.0;
                                  "  Address = EXCLUDED.Address, " +
                                  "  LeaveDate = EXCLUDED.LeaveDate";
                                  
-                    try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(file));
-                         PreparedStatement pst = conn.prepareStatement(sql)) {
-                        
-                        String line;
-                        boolean isHeader = true;
-                        while ((line = br.readLine()) != null) {
-                            if (line.trim().isEmpty()) continue;
-                            String[] fields = parseCSVLine(line);
-                            if (isHeader) {
-                                isHeader = false;
-                                try {
-                                    Integer.parseInt(cleanCSVField(fields[0]));
-                                } catch (NumberFormatException e) {
+                    java.sql.Connection localConn = null;
+                    try {
+                        localConn = javaconnect.ConnecrDb();
+                        if (localConn == null) throw new Exception("Database connection offline");
+                        localConn.setAutoCommit(false);
+
+                        try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(file));
+                             PreparedStatement pst = localConn.prepareStatement(sql)) {
+                            
+                            String line;
+                            boolean isHeader = true;
+                            while ((line = br.readLine()) != null) {
+                                if (line.trim().isEmpty()) continue;
+                                String[] fields = parseCSVLine(line);
+                                if (isHeader) {
+                                    isHeader = false;
+                                    try {
+                                        Integer.parseInt(cleanCSVField(fields[0]));
+                                    } catch (NumberFormatException e) {
+                                        continue;
+                                    }
+                                }
+                                
+                                if (fields.length < 5) {
+                                    failed++;
                                     continue;
                                 }
-                            }
-                            
-                            if (fields.length < 5) {
-                                failed++;
-                                continue;
-                            }
-                            
-                            try {
-                                pst.setInt(1, Integer.parseInt(cleanCSVField(fields[0])));
-                                pst.setString(2, cleanCSVField(fields[1]));
-                                pst.setString(3, cleanCSVField(fields[2]));
-                                pst.setString(4, cleanCSVField(fields[3]));
-                                pst.setString(5, cleanCSVField(fields[4]));
-                                String leaveVal = fields.length >= 6 ? cleanCSVField(fields[5]) : null;
-                                if (leaveVal != null && (leaveVal.equalsIgnoreCase("null") || leaveVal.isEmpty())) {
-                                    leaveVal = null;
+                                
+                                try {
+                                    pst.setInt(1, Integer.parseInt(cleanCSVField(fields[0])));
+                                    pst.setString(2, cleanCSVField(fields[1]));
+                                    pst.setString(3, cleanCSVField(fields[2]));
+                                    pst.setString(4, cleanCSVField(fields[3]));
+                                    pst.setString(5, cleanCSVField(fields[4]));
+                                    String leaveVal = fields.length >= 6 ? cleanCSVField(fields[5]) : null;
+                                    if (leaveVal != null && (leaveVal.equalsIgnoreCase("null") || leaveVal.isEmpty())) {
+                                        leaveVal = null;
+                                    }
+                                    pst.setString(6, leaveVal);
+                                    pst.executeUpdate();
+                                    imported++;
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                    failed++;
                                 }
-                                pst.setString(6, leaveVal);
-                                pst.executeUpdate();
-                                imported++;
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                                failed++;
                             }
+                            localConn.commit();
+                        } catch (Exception ex) {
+                            localConn.rollback();
+                            throw ex;
                         }
                         
                         final int finalImported = imported;
@@ -1447,13 +1506,18 @@ private double lastUlSim = 20.0;
                             }
                         });
                         
-                    } catch (Exception ex) {
+                    } catch (final Exception ex) {
                         ex.printStackTrace();
                         java.awt.EventQueue.invokeLater(new Runnable() {
                             public void run() {
                                 javax.swing.JOptionPane.showMessageDialog(Admin.this, "Import error: " + ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
                             }
                         });
+                    } finally {
+                        if (localConn != null) {
+                            try { localConn.setAutoCommit(true); } catch (Exception e) {}
+                            try { localConn.close(); } catch (Exception e) {}
+                        }
                     }
                 }
             }).start();
@@ -1479,40 +1543,51 @@ private double lastUlSim = 20.0;
                                  "  Speed = EXCLUDED.Speed, " +
                                  "  Duration = EXCLUDED.Duration";
                                  
-                    try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(file));
-                         PreparedStatement pst = conn.prepareStatement(sql)) {
-                        
-                        String line;
-                        boolean isHeader = true;
-                        while ((line = br.readLine()) != null) {
-                            if (line.trim().isEmpty()) continue;
-                            String[] fields = parseCSVLine(line);
-                            if (isHeader) {
-                                isHeader = false;
-                                try {
-                                    Integer.parseInt(cleanCSVField(fields[0]));
-                                } catch (NumberFormatException e) {
+                    java.sql.Connection localConn = null;
+                    try {
+                        localConn = javaconnect.ConnecrDb();
+                        if (localConn == null) throw new Exception("Database connection offline");
+                        localConn.setAutoCommit(false);
+
+                        try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(file));
+                             PreparedStatement pst = localConn.prepareStatement(sql)) {
+                            
+                            String line;
+                            boolean isHeader = true;
+                            while ((line = br.readLine()) != null) {
+                                if (line.trim().isEmpty()) continue;
+                                String[] fields = parseCSVLine(line);
+                                if (isHeader) {
+                                    isHeader = false;
+                                    try {
+                                        Integer.parseInt(cleanCSVField(fields[0]));
+                                    } catch (NumberFormatException e) {
+                                        continue;
+                                    }
+                                }
+                                
+                                if (fields.length < 5) {
+                                    failed++;
                                     continue;
                                 }
+                                
+                                try {
+                                    pst.setInt(1, Integer.parseInt(cleanCSVField(fields[0])));
+                                    pst.setString(2, cleanCSVField(fields[1]));
+                                    pst.setInt(3, Integer.parseInt(cleanCSVField(fields[2])));
+                                    pst.setString(4, cleanCSVField(fields[3]));
+                                    pst.setString(5, cleanCSVField(fields[4]));
+                                    pst.executeUpdate();
+                                    imported++;
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                    failed++;
+                                }
                             }
-                            
-                            if (fields.length < 5) {
-                                failed++;
-                                continue;
-                            }
-                            
-                            try {
-                                pst.setInt(1, Integer.parseInt(cleanCSVField(fields[0])));
-                                pst.setString(2, cleanCSVField(fields[1]));
-                                pst.setInt(3, Integer.parseInt(cleanCSVField(fields[2])));
-                                pst.setString(4, cleanCSVField(fields[3]));
-                                pst.setString(5, cleanCSVField(fields[4]));
-                                pst.executeUpdate();
-                                imported++;
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                                failed++;
-                            }
+                            localConn.commit();
+                        } catch (Exception ex) {
+                            localConn.rollback();
+                            throw ex;
                         }
                         
                         final int finalImported = imported;
@@ -1526,13 +1601,18 @@ private double lastUlSim = 20.0;
                             }
                         });
                         
-                    } catch (Exception ex) {
+                    } catch (final Exception ex) {
                         ex.printStackTrace();
                         java.awt.EventQueue.invokeLater(new Runnable() {
                             public void run() {
                                 javax.swing.JOptionPane.showMessageDialog(Admin.this, "Import error: " + ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
                             }
                         });
+                    } finally {
+                        if (localConn != null) {
+                            try { localConn.setAutoCommit(true); } catch (Exception e) {}
+                            try { localConn.close(); } catch (Exception e) {}
+                        }
                     }
                 }
             }).start();

@@ -50,4 +50,12 @@ public class CustomerDAO {
         pst.setInt(1, Integer.parseInt(id));
         return pst.executeQuery();
     }
+
+    public static void deleteCustomer(Connection conn, String id) throws Exception {
+        String sql = "DELETE FROM customer WHERE ID=?";
+        try (PreparedStatement pst = conn.prepareStatement(sql)) {
+            pst.setInt(1, Integer.parseInt(id));
+            pst.execute();
+        }
+    }
 }

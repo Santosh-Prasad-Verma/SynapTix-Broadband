@@ -105,8 +105,11 @@ ResultSet rs;
     public void jTable1(){
         try{
             rs = PlanDAO.getAllPlans(conn);
+            java.sql.Statement stmt = rs.getStatement();
             jTable1.setModel(DbUtils.resultSetToTableModel(rs));
             UIUtils.styleTable(jTable1);
+            if (stmt != null) stmt.close();
+            if (rs != null) rs.close();
         }catch(Exception e){
             e.printStackTrace();
         }

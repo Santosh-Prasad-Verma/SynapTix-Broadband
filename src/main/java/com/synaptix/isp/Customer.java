@@ -87,12 +87,94 @@ private javax.swing.JComboBox<String> comboFilterPlan;
         
         jPanel1.add(headerPanel, java.awt.BorderLayout.NORTH);
         
-        // 3. Left Panel (Form Panel)
+        // 3. Re-layout jPanel2 programmatically using GridBagLayout and add DELETE button
         jPanel2.setBackground(java.awt.Color.WHITE);
         jPanel2.setBorder(javax.swing.BorderFactory.createCompoundBorder(
             javax.swing.BorderFactory.createLineBorder(new java.awt.Color(224, 224, 224), 1),
             javax.swing.BorderFactory.createEmptyBorder(15, 20, 15, 20)
         ));
+        
+        jPanel2.removeAll();
+        jPanel2.setLayout(new java.awt.GridBagLayout());
+        java.awt.GridBagConstraints gbc = new java.awt.GridBagConstraints();
+        gbc.insets = new java.awt.Insets(6, 6, 6, 6);
+        gbc.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gbc.anchor = java.awt.GridBagConstraints.WEST;
+
+        // Row 0: ID
+        gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 0.3;
+        jPanel2.add(jLabel2, gbc);
+        gbc.gridx = 1; gbc.weightx = 0.7;
+        jPanel2.add(jTextField1, gbc);
+
+        // Row 1: NAME
+        gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0.3;
+        jPanel2.add(jLabel3, gbc);
+        gbc.gridx = 1; gbc.weightx = 0.7;
+        jPanel2.add(jTextField2, gbc);
+
+        // Row 2: CONTACT
+        gbc.gridx = 0; gbc.gridy = 2; gbc.weightx = 0.3;
+        jPanel2.add(jLabel4, gbc);
+        gbc.gridx = 1; gbc.weightx = 0.7;
+        jPanel2.add(jTextField3, gbc);
+
+        // Row 3: SEX
+        gbc.gridx = 0; gbc.gridy = 3; gbc.weightx = 0.3;
+        jPanel2.add(jLabel5, gbc);
+        gbc.gridx = 1; gbc.weightx = 0.7;
+        jPanel2.add(jComboBox1, gbc);
+
+        // Row 4: PURPOSE
+        gbc.gridx = 0; gbc.gridy = 4; gbc.weightx = 0.3;
+        jPanel2.add(jLabel6, gbc);
+        gbc.gridx = 1; gbc.weightx = 0.7;
+        jPanel2.add(jComboBox2, gbc);
+
+        // Row 5: ADDRESS
+        gbc.gridx = 0; gbc.gridy = 5; gbc.weightx = 0.3;
+        jPanel2.add(jLabel7, gbc);
+        gbc.gridx = 1; gbc.weightx = 0.7;
+        jPanel2.add(jTextField4, gbc);
+
+        // Row 6: PLAN
+        gbc.gridx = 0; gbc.gridy = 6; gbc.weightx = 0.3;
+        jPanel2.add(jLabel8, gbc);
+        gbc.gridx = 1; gbc.weightx = 0.7;
+        jPanel2.add(jTextField5, gbc);
+
+        // Row 7: EMAIL
+        gbc.gridx = 0; gbc.gridy = 7; gbc.weightx = 0.3;
+        jPanel2.add(jLabelEmail, gbc);
+        gbc.gridx = 1; gbc.weightx = 0.7;
+        jPanel2.add(txtEmail, gbc);
+
+        // Row 8: Action buttons (UPDATE, DELETE, ADD)
+        javax.swing.JPanel btnPanel = new javax.swing.JPanel(new java.awt.GridLayout(1, 3, 8, 0));
+        btnPanel.setOpaque(false);
+        
+        btnUpdate.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 12));
+        btnAddEmp.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 12));
+        
+        javax.swing.JButton btnDelete = new javax.swing.JButton("DELETE");
+        btnDelete.setBackground(new java.awt.Color(239, 68, 68)); // Modern premium red
+        btnDelete.setForeground(java.awt.Color.WHITE);
+        btnDelete.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 12));
+        btnDelete.putClientProperty("JButton.buttonType", "roundRect");
+        
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
+        
+        btnPanel.add(btnUpdate);
+        btnPanel.add(btnDelete);
+        btnPanel.add(btnAddEmp);
+        
+        gbc.gridx = 0; gbc.gridy = 8; gbc.gridwidth = 2; gbc.weightx = 1.0;
+        gbc.insets = new java.awt.Insets(12, 6, 6, 6);
+        jPanel2.add(btnPanel, gbc);
         
         // Wrap Left Panel in a container to prevent vertical stretching
         javax.swing.JPanel leftWrapper = new javax.swing.JPanel(new java.awt.BorderLayout());
@@ -183,15 +265,46 @@ private javax.swing.JComboBox<String> comboFilterPlan;
         jPanel1.repaint();
     }
 
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {
+        String id = jTextField1.getText().trim();
+        if (id.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Please select or enter a Customer ID to delete.");
+            return;
+        }
+        int confirm = JOptionPane.showConfirmDialog(null, 
+            "Are you sure you want to delete Customer ID: " + id + "?", 
+            "Confirm Delete", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            try {
+                CustomerDAO.deleteCustomer(conn, id);
+                JOptionPane.showMessageDialog(null, "Customer successfully deleted.");
+                jTable1();
+                // Clear fields
+                jTextField1.setText("");
+                jTextField2.setText("");
+                jTextField3.setText("");
+                jTextField4.setText("");
+                jTextField5.setText("");
+                txtEmail.setText("");
+            } catch(Exception e) {
+                JOptionPane.showMessageDialog(null, "Error deleting customer: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
+
     
     public void jTable1(){
         try{
             rs = CustomerDAO.getAllCustomers(conn);
+            java.sql.Statement stmt = rs.getStatement();
             TableModel tableModel = DbUtils.resultSetToTableModel(rs);
             jTable1.setModel(tableModel);
             rowSorter = new TableRowSorter<>(tableModel);
             jTable1.setRowSorter(rowSorter);
             UIUtils.styleTable(jTable1);
+            if (stmt != null) stmt.close();
+            if (rs != null) rs.close();
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -200,8 +313,11 @@ private javax.swing.JComboBox<String> comboFilterPlan;
         public void jTable2(){
         try{
             rs = PlanDAO.getAllPlans(conn);
+            java.sql.Statement stmt = rs.getStatement();
             jTable2.setModel(DbUtils.resultSetToTableModel(rs));
             UIUtils.styleTable(jTable2);
+            if (stmt != null) stmt.close();
+            if (rs != null) rs.close();
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -218,20 +334,22 @@ private javax.swing.JComboBox<String> comboFilterPlan;
         }
         jTable2();
     }
-
+ 
     public void Search(){
         applyFilters();
     }
-
+ 
     public void populatePlanFilter() {
         comboFilterPlan.removeAllItems();
         comboFilterPlan.addItem("All Plans");
         try {
             ResultSet planRs = PlanDAO.getAllPlans(conn);
+            java.sql.Statement stmt = planRs.getStatement();
             while (planRs.next()) {
                 comboFilterPlan.addItem(planRs.getString("PlanName"));
             }
             planRs.close();
+            if (stmt != null) stmt.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -899,12 +1017,14 @@ private javax.swing.JComboBox<String> comboFilterPlan;
         if (!planName.equals("None") && !planName.trim().isEmpty()) {
             try {
                 ResultSet planRs = PlanDAO.getPlanByName(conn, planName);
+                java.sql.Statement stmt = planRs.getStatement();
                 if (planRs.next()) {
                     speedVal = planRs.getString("Speed") + " Mbps";
                     costVal = planRs.getString("Cost");
                     durationVal = planRs.getString("Duration") + " Months";
                 }
                 planRs.close();
+                if (stmt != null) stmt.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -923,8 +1043,9 @@ private javax.swing.JComboBox<String> comboFilterPlan;
         new Thread(new Runnable() {
             @Override
             public void run() {
-                java.io.File tempFile = new java.io.File("Invoice_" + customerId + "_temp.pdf");
+                java.io.File tempFile = null;
                 try {
+                    tempFile = java.io.File.createTempFile("Invoice_" + customerId + "_temp", ".pdf");
                     generatePDFInvoice(tempFile, customerId, name, contact, purpose, address, planName, speed, cost, duration);
 
                     String subject = "SynapTix Broadband Service Invoice (" + customerId + ")";
@@ -948,14 +1069,22 @@ private javax.swing.JComboBox<String> comboFilterPlan;
                         tempFile.delete();
                     } catch (Exception ex) {}
 
-                    if (EmailUtility.isSmtpConfigured()) {
-                        JOptionPane.showMessageDialog(Customer.this, "Invoice successfully emailed to " + email);
-                    } else {
-                        JOptionPane.showMessageDialog(Customer.this, "Email details printed to server console (SMTP not configured in db.properties).");
-                    }
-                } catch (Exception e) {
+                    javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            if (EmailUtility.isSmtpConfigured()) {
+                                JOptionPane.showMessageDialog(Customer.this, "Invoice successfully emailed to " + email);
+                            } else {
+                                JOptionPane.showMessageDialog(Customer.this, "Email details printed to server console (SMTP not configured in db.properties).");
+                            }
+                        }
+                    });
+                } catch (final Exception e) {
                     e.printStackTrace();
-                    JOptionPane.showMessageDialog(Customer.this, "Failed to email invoice: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            JOptionPane.showMessageDialog(Customer.this, "Failed to email invoice: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    });
                 }
             }
         }).start();
@@ -983,12 +1112,14 @@ private javax.swing.JComboBox<String> comboFilterPlan;
         if (!planName.equals("None") && !planName.trim().isEmpty()) {
             try {
                 ResultSet planRs = PlanDAO.getPlanByName(conn, planName);
+                java.sql.Statement stmt = planRs.getStatement();
                 if (planRs.next()) {
                     speed = planRs.getString("Speed") + " Mbps";
                     cost = planRs.getString("Cost");
                     duration = planRs.getString("Duration") + " Months";
                 }
                 planRs.close();
+                if (stmt != null) stmt.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }
