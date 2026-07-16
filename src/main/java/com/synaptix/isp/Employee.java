@@ -38,9 +38,102 @@ TableRowSorter<TableModel> rowSorter;
         super("SynapTix Broadband - Employee Directory");
         initComponents();
         conn=javaconnect.ConnecrDb();
+        setupCleanLayout();
         showDate();
         jTable1();
     }
+
+    private void setupCleanLayout() {
+        // 1. Reset main panel and set modern padding/BorderLayout
+        jPanel1.removeAll();
+        jPanel1.setLayout(new java.awt.BorderLayout(20, 15));
+        jPanel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 25, 20, 25));
+        
+        // 2. Header Panel (North)
+        javax.swing.JPanel headerPanel = new javax.swing.JPanel(new java.awt.BorderLayout());
+        headerPanel.setOpaque(false);
+        
+        // Header Left: Logo + Title
+        javax.swing.JPanel headerLeft = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 12, 0));
+        headerLeft.setOpaque(false);
+        headerLeft.add(jLabel8); // Logo icon
+        jLabel1.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 24));
+        jLabel1.setForeground(new java.awt.Color(24, 144, 255));
+        jLabel1.setText("EMPLOYEE DIRECTORY");
+        headerLeft.add(jLabel1);
+        headerPanel.add(headerLeft, java.awt.BorderLayout.WEST);
+        
+        // Header Right: Back Button
+        javax.swing.JPanel headerRight = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 0, 5));
+        headerRight.setOpaque(false);
+        btnBack.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 13));
+        headerRight.add(btnBack);
+        headerPanel.add(headerRight, java.awt.BorderLayout.EAST);
+        
+        jPanel1.add(headerPanel, java.awt.BorderLayout.NORTH);
+        
+        // 3. Left Panel (Form Panel)
+        jPanel2.setBackground(java.awt.Color.WHITE);
+        jPanel2.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+            javax.swing.BorderFactory.createLineBorder(new java.awt.Color(224, 224, 224), 1),
+            javax.swing.BorderFactory.createEmptyBorder(15, 20, 15, 20)
+        ));
+        
+        // Wrap Left Panel in a container to prevent vertical stretching
+        javax.swing.JPanel leftWrapper = new javax.swing.JPanel(new java.awt.BorderLayout());
+        leftWrapper.setOpaque(false);
+        leftWrapper.add(jPanel2, java.awt.BorderLayout.NORTH);
+        
+        // 4. Right Panel (Tables and Actions Panel)
+        javax.swing.JPanel rightPanel = new javax.swing.JPanel(new java.awt.BorderLayout(0, 15));
+        rightPanel.setOpaque(false);
+        
+        // Search & Filter Panel (North of Right Panel)
+        jPanel4.setBackground(java.awt.Color.WHITE);
+        jPanel4.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+            javax.swing.BorderFactory.createLineBorder(new java.awt.Color(224, 224, 224), 1),
+            javax.swing.BorderFactory.createEmptyBorder(10, 15, 10, 15)
+        ));
+        jPanel4.removeAll();
+        jPanel4.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 0));
+        jTextField7.setPreferredSize(new java.awt.Dimension(200, 28));
+        jPanel4.add(jTextField7);
+        jPanel4.add(btnSearch);
+        
+        rightPanel.add(jPanel4, java.awt.BorderLayout.NORTH);
+        
+        // Middle Panel: Table Container
+        jPanel3.setBackground(java.awt.Color.WHITE);
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(
+            javax.swing.BorderFactory.createLineBorder(new java.awt.Color(224, 224, 224), 1),
+            "Employee Directory List",
+            javax.swing.border.TitledBorder.LEFT,
+            javax.swing.border.TitledBorder.TOP,
+            new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 12),
+            new java.awt.Color(120, 120, 120)
+        ));
+        jScrollPane1.setBorder(null);
+        jPanel3.removeAll();
+        jPanel3.setLayout(new java.awt.BorderLayout());
+        jPanel3.add(jScrollPane1, java.awt.BorderLayout.CENTER);
+        
+        rightPanel.add(jPanel3, java.awt.BorderLayout.CENTER);
+        
+        // Combine Left and Right Panel in a side-by-side SplitPane
+        javax.swing.JSplitPane mainSplit = new javax.swing.JSplitPane(javax.swing.JSplitPane.HORIZONTAL_SPLIT, leftWrapper, rightPanel);
+        mainSplit.setDividerLocation(310);
+        mainSplit.setDividerSize(0);
+        mainSplit.setBorder(null);
+        mainSplit.setOpaque(false);
+        leftWrapper.setOpaque(false);
+        rightPanel.setOpaque(false);
+        
+        jPanel1.add(mainSplit, java.awt.BorderLayout.CENTER);
+        
+        jPanel1.revalidate();
+        jPanel1.repaint();
+    }
+
 
     public void jTable1(){
         try{
