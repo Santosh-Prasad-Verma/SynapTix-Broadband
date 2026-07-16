@@ -45,6 +45,18 @@ run() {
     java -cp build/classes:flatlaf-3.1.1.jar:postgresql-42.6.0.jar:rs2xml.jar:itext-2.1.7.jar:HikariCP-4.0.3.jar:slf4j-api-1.7.30.jar:slf4j-simple-1.7.30.jar:jfreechart-1.5.3.jar:javax.mail-1.6.2.jar:activation-1.1.1.jar com.synaptix.isp.Home
 }
 
+test_suite() {
+    echo "Running automated test suites..."
+    if command -v mvn &> /dev/null; then
+        echo "Maven found on system. Executing test phase..."
+        mvn test
+    else
+        echo "Maven not found on system path."
+        echo "Note: If you are running inside NetBeans, IntelliJ, or Eclipse, you can right-click the project and select 'Test' or 'Run Unit Tests' to execute the test suite automatically."
+        echo "Alternatively, install maven (e.g. 'sudo dnf install maven' or 'sudo apt install maven') to run tests on the command line via 'mvn test'."
+    fi
+}
+
 case "$COMMAND" in
     clean)
         clean
@@ -58,8 +70,11 @@ case "$COMMAND" in
     run)
         run
         ;;
+    test)
+        test_suite
+        ;;
     *)
-        echo "Usage: ./build.sh {clean|compile|package|run}"
+        echo "Usage: ./build.sh {clean|compile|package|run|test}"
         exit 1
         ;;
 esac
