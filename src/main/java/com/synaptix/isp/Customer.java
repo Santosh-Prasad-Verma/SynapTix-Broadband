@@ -52,10 +52,137 @@ private javax.swing.JComboBox<String> comboFilterPlan;
         super("SynapTix Broadband - Customer Directory");
         initComponents();
         conn=javaconnect.ConnecrDb();
+        setupCleanLayout();
         jTable1();
         jTable2();
         populatePlanFilter();
     }
+
+    private void setupCleanLayout() {
+        // 1. Reset main panel and set modern padding/BorderLayout
+        jPanel1.removeAll();
+        jPanel1.setLayout(new java.awt.BorderLayout(20, 15));
+        jPanel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 25, 20, 25));
+        
+        // 2. Header Panel (North)
+        javax.swing.JPanel headerPanel = new javax.swing.JPanel(new java.awt.BorderLayout());
+        headerPanel.setOpaque(false);
+        
+        // Header Left: Logo + Title
+        javax.swing.JPanel headerLeft = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 12, 0));
+        headerLeft.setOpaque(false);
+        headerLeft.add(jLabel11); // Logo
+        jLabel9.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 24));
+        jLabel9.setForeground(new java.awt.Color(24, 144, 255));
+        jLabel9.setText("CUSTOMER DIRECTORY");
+        headerLeft.add(jLabel9);
+        headerPanel.add(headerLeft, java.awt.BorderLayout.WEST);
+        
+        // Header Right: Back Button
+        javax.swing.JPanel headerRight = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 0, 5));
+        headerRight.setOpaque(false);
+        btnBack.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 13));
+        headerRight.add(btnBack);
+        headerPanel.add(headerRight, java.awt.BorderLayout.EAST);
+        
+        jPanel1.add(headerPanel, java.awt.BorderLayout.NORTH);
+        
+        // 3. Left Panel (Form Panel)
+        jPanel2.setBackground(java.awt.Color.WHITE);
+        jPanel2.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+            javax.swing.BorderFactory.createLineBorder(new java.awt.Color(224, 224, 224), 1),
+            javax.swing.BorderFactory.createEmptyBorder(15, 20, 15, 20)
+        ));
+        
+        // Wrap Left Panel in a container to prevent vertical stretching
+        javax.swing.JPanel leftWrapper = new javax.swing.JPanel(new java.awt.BorderLayout());
+        leftWrapper.setOpaque(false);
+        leftWrapper.add(jPanel2, java.awt.BorderLayout.NORTH);
+        
+        // 4. Right Panel (Tables and Actions Panel)
+        javax.swing.JPanel rightPanel = new javax.swing.JPanel(new java.awt.BorderLayout(0, 15));
+        rightPanel.setOpaque(false);
+        
+        // Search & Filter Panel (North of Right Panel)
+        jPanel4.setBackground(java.awt.Color.WHITE);
+        jPanel4.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+            javax.swing.BorderFactory.createLineBorder(new java.awt.Color(224, 224, 224), 1),
+            javax.swing.BorderFactory.createEmptyBorder(10, 15, 10, 15)
+        ));
+        rightPanel.add(jPanel4, java.awt.BorderLayout.NORTH);
+        
+        // Middle Panel: Nested split for Plans Table (jTable2) and Customers Table (jTable1)
+        javax.swing.JPanel tablesContainer = new javax.swing.JPanel(new java.awt.GridBagLayout());
+        tablesContainer.setOpaque(false);
+        java.awt.GridBagConstraints tGbc = new java.awt.GridBagConstraints();
+        tGbc.fill = java.awt.GridBagConstraints.BOTH;
+        tGbc.gridx = 0;
+        tGbc.weightx = 1.0;
+        
+        // Top Table: Plan Directory Table (jTable2) inside jPanel5
+        tGbc.gridy = 0;
+        tGbc.weighty = 0.35; // Plans table takes 35% height
+        tGbc.insets = new java.awt.Insets(0, 0, 15, 0);
+        jPanel5.setBackground(java.awt.Color.WHITE);
+        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(
+            javax.swing.BorderFactory.createLineBorder(new java.awt.Color(224, 224, 224), 1),
+            "Available Broadband Plans",
+            javax.swing.border.TitledBorder.LEFT,
+            javax.swing.border.TitledBorder.TOP,
+            new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 12),
+            new java.awt.Color(120, 120, 120)
+        ));
+        jScrollPane2.setBorder(null);
+        jPanel5.removeAll();
+        jPanel5.setLayout(new java.awt.BorderLayout());
+        jPanel5.add(jScrollPane2, java.awt.BorderLayout.CENTER);
+        tablesContainer.add(jPanel5, tGbc);
+        
+        // Bottom Table: Customer List Table (jTable1) inside jPanel3
+        tGbc.gridy = 1;
+        tGbc.weighty = 0.65; // Customer table takes 65% height
+        tGbc.insets = new java.awt.Insets(0, 0, 0, 0);
+        jPanel3.setBackground(java.awt.Color.WHITE);
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(
+            javax.swing.BorderFactory.createLineBorder(new java.awt.Color(224, 224, 224), 1),
+            "Customer Directory List",
+            javax.swing.border.TitledBorder.LEFT,
+            javax.swing.border.TitledBorder.TOP,
+            new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 12),
+            new java.awt.Color(120, 120, 120)
+        ));
+        jScrollPane1.setBorder(null);
+        jPanel3.removeAll();
+        jPanel3.setLayout(new java.awt.BorderLayout());
+        jPanel3.add(jScrollPane1, java.awt.BorderLayout.CENTER);
+        tablesContainer.add(jPanel3, tGbc);
+        
+        rightPanel.add(tablesContainer, java.awt.BorderLayout.CENTER);
+        
+        // South Panel: Bottom Action Buttons
+        javax.swing.JPanel actionPanel = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 12, 0));
+        actionPanel.setOpaque(false);
+        btnGenerateBill.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 13));
+        btnEmailInvoice.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 13));
+        actionPanel.add(btnGenerateBill);
+        actionPanel.add(btnEmailInvoice);
+        rightPanel.add(actionPanel, java.awt.BorderLayout.SOUTH);
+        
+        // Combine Left and Right Panel in a side-by-side SplitPane
+        javax.swing.JSplitPane mainSplit = new javax.swing.JSplitPane(javax.swing.JSplitPane.HORIZONTAL_SPLIT, leftWrapper, rightPanel);
+        mainSplit.setDividerLocation(310);
+        mainSplit.setDividerSize(0);
+        mainSplit.setBorder(null);
+        mainSplit.setOpaque(false);
+        leftWrapper.setOpaque(false);
+        rightPanel.setOpaque(false);
+        
+        jPanel1.add(mainSplit, java.awt.BorderLayout.CENTER);
+        
+        jPanel1.revalidate();
+        jPanel1.repaint();
+    }
+
     
     public void jTable1(){
         try{

@@ -28,10 +28,125 @@ ResultSet rs;
         super("SynapTix Broadband - Complaints Support");
         initComponents();
         conn=javaconnect.ConnecrDb();
+        setupCleanLayout();
         showDate();
         jTable1();
     }
 
+    private void setupCleanLayout() {
+        // 1. Reset main panel and set modern padding/BorderLayout
+        jPanel1.removeAll();
+        jPanel1.setLayout(new java.awt.BorderLayout(20, 15));
+        jPanel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 25, 20, 25));
+        
+        // 2. Header Panel (North)
+        javax.swing.JPanel headerPanel = new javax.swing.JPanel(new java.awt.BorderLayout());
+        headerPanel.setOpaque(false);
+        
+        // Header Left: Logo + Title
+        javax.swing.JPanel headerLeft = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 12, 0));
+        headerLeft.setOpaque(false);
+        headerLeft.add(jLabel5); // Logo icon
+        jLabel1.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 24));
+        jLabel1.setForeground(new java.awt.Color(33, 43, 54));
+        jLabel1.setText("COMPLAINTS SUPPORT");
+        headerLeft.add(jLabel1);
+        headerPanel.add(headerLeft, java.awt.BorderLayout.WEST);
+        
+        // Header Right: Back Button
+        javax.swing.JPanel headerRight = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 0, 5));
+        headerRight.setOpaque(false);
+        btnBack.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 13));
+        headerRight.add(btnBack);
+        headerPanel.add(headerRight, java.awt.BorderLayout.EAST);
+        
+        jPanel1.add(headerPanel, java.awt.BorderLayout.NORTH);
+        
+        // 3. Left Panel (Form Panel wrapper)
+        jPanel2.setBackground(java.awt.Color.WHITE);
+        jPanel2.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+            javax.swing.BorderFactory.createLineBorder(new java.awt.Color(224, 224, 224), 1),
+            javax.swing.BorderFactory.createEmptyBorder(15, 20, 15, 20)
+        ));
+        
+        // Re-align elements inside jPanel2 using GridBagLayout for alignment
+        jPanel2.removeAll();
+        jPanel2.setLayout(new java.awt.GridBagLayout());
+        java.awt.GridBagConstraints gbc = new java.awt.GridBagConstraints();
+        gbc.insets = new java.awt.Insets(8, 8, 8, 8);
+        gbc.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gbc.anchor = java.awt.GridBagConstraints.WEST;
+        
+        // Row 0: ID
+        gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 0.3;
+        jPanel2.add(jLabel2, gbc);
+        gbc.gridx = 1; gbc.weightx = 0.7;
+        jPanel2.add(jTextField1, gbc);
+        
+        // Row 1: COMPLAINT DESCRIPTION
+        gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0.3;
+        gbc.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        jPanel2.add(jLabel3, gbc);
+        gbc.gridx = 1; gbc.weightx = 0.7;
+        gbc.fill = java.awt.GridBagConstraints.BOTH;
+        gbc.weighty = 1.0;
+        jScrollPane1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(200, 200, 200)));
+        jPanel2.add(jScrollPane1, gbc);
+        
+        // Row 2: DATE
+        gbc.gridx = 0; gbc.gridy = 2; gbc.weightx = 0.3;
+        gbc.weighty = 0.0;
+        gbc.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        jPanel2.add(jLabel4, gbc);
+        gbc.gridx = 1; gbc.weightx = 0.7;
+        jPanel2.add(jt1, gbc);
+        
+        // Row 3: Buttons
+        javax.swing.JPanel btnPanel = new javax.swing.JPanel(new java.awt.GridLayout(1, 2, 10, 0));
+        btnPanel.setOpaque(false);
+        btnAddCom.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 12));
+        btnSolve.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 12));
+        btnPanel.add(btnAddCom);
+        btnPanel.add(btnSolve);
+        
+        gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 2; gbc.weightx = 1.0;
+        gbc.insets = new java.awt.Insets(15, 8, 8, 8);
+        jPanel2.add(btnPanel, gbc);
+        
+        javax.swing.JPanel leftWrapper = new javax.swing.JPanel(new java.awt.BorderLayout());
+        leftWrapper.setOpaque(false);
+        leftWrapper.add(jPanel2, java.awt.BorderLayout.NORTH);
+        
+        // 4. Right Panel (Table panel)
+        jPanel3.setBackground(java.awt.Color.WHITE);
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(
+            javax.swing.BorderFactory.createLineBorder(new java.awt.Color(224, 224, 224), 1),
+            "Open Support Tickets",
+            javax.swing.border.TitledBorder.LEFT,
+            javax.swing.border.TitledBorder.TOP,
+            new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 12),
+            new java.awt.Color(120, 120, 120)
+        ));
+        jScrollPane2.setBorder(null);
+        jPanel3.removeAll();
+        jPanel3.setLayout(new java.awt.BorderLayout());
+        jPanel3.add(jScrollPane2, java.awt.BorderLayout.CENTER);
+        
+        // Combine Left and Right using SplitPane
+        javax.swing.JSplitPane mainSplit = new javax.swing.JSplitPane(javax.swing.JSplitPane.HORIZONTAL_SPLIT, leftWrapper, jPanel3);
+        mainSplit.setDividerLocation(310);
+        mainSplit.setDividerSize(0);
+        mainSplit.setBorder(null);
+        mainSplit.setOpaque(false);
+        leftWrapper.setOpaque(false);
+        jPanel3.setOpaque(false);
+        
+        jPanel1.add(mainSplit, java.awt.BorderLayout.CENTER);
+        
+        jPanel1.revalidate();
+        jPanel1.repaint();
+    }
+    
     void showDate(){
         Date d = new Date();
         SimpleDateFormat s = new SimpleDateFormat("YYYY-MM-dd");
@@ -42,6 +157,7 @@ ResultSet rs;
         try{
             rs = ComplaintDAO.getAllComplaints(conn);
             jTable1.setModel(DbUtils.resultSetToTableModel(rs));
+            UIUtils.styleTable(jTable1);
         }catch(Exception e){
             e.printStackTrace();
         }
