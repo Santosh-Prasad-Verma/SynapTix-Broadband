@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="icons/SynapTix-Broadband-logo-for-black-screen.png" width="250" height="250" alt="SynapTix Broadband Logo">
+  <img src="./icons/SynapTix-Broadband-logo-for-black-screen.png" width="250" height="250" alt="SynapTix Broadband Logo">
 </p>
 
 # 🌐 SynapTix Broadband — ISP Management System
