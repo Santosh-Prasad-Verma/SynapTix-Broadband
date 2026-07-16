@@ -5,8 +5,12 @@ import java.sql.Connection;
 import java.util.Properties;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.flywaydb.core.Flyway;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class javaconnect {
+    private static final Logger logger = LoggerFactory.getLogger(javaconnect.class);
     private static HikariDataSource dataSource;
     private static String url = "jdbc:postgresql://localhost:5435/isp";
     private static String user = "postgres";
@@ -23,7 +27,7 @@ public class javaconnect {
                 password = prop.getProperty("db.password");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Failed to load db.properties configuration file", e);
         }
 
         try {
@@ -41,8 +45,15 @@ public class javaconnect {
             config.setConnectionTimeout(10000);
 
             dataSource = new HikariDataSource(config);
+            logger.info("HikariCP Connection Pool initialized successfully.");
+
+            // Run Flyway database migrations
+            logger.info("Executing Flyway database migrations...");
+            Flyway flyway = Flyway.configure().dataSource(dataSource).load();
+            flyway.migrate();
+            logger.info("Database migrations completed successfully.");
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error setting up database connection datasource / running Flyway migrations", e);
         }
     }
 
@@ -77,7 +88,7 @@ public class javaconnect {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error parsing database connection URL parameters", e);
         }
         return params;
     }
@@ -88,7 +99,7 @@ public class javaconnect {
                 return dataSource.getConnection();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Failed to lease database connection from pool", e);
         }
         return null;
     }

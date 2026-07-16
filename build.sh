@@ -13,13 +13,12 @@ clean() {
 compile() {
     echo "Compiling Java source files..."
     mkdir -p build/classes
-    javac -Xlint:none -cp .:flatlaf-3.1.1.jar:postgresql-42.6.0.jar:rs2xml.jar:itext-2.1.7.jar:HikariCP-4.0.3.jar:slf4j-api-1.7.30.jar:slf4j-simple-1.7.30.jar:jfreechart-1.5.3.jar:javax.mail-1.6.2.jar:activation-1.1.1.jar -d build/classes src/main/java/com/synaptix/isp/*.java
+    javac -Xlint:none -cp .:flatlaf-3.1.1.jar:postgresql-42.6.0.jar:rs2xml.jar:itext-2.1.7.jar:HikariCP-4.0.3.jar:slf4j-api-1.7.30.jar:logback-classic-1.2.11.jar:logback-core-1.2.11.jar:flyway-core-8.5.13.jar:jfreechart-1.5.3.jar:javax.mail-1.6.2.jar:activation-1.1.1.jar -d build/classes src/main/java/com/synaptix/isp/*.java
     if [ $? -eq 0 ]; then
         echo "Compilation successful!"
         echo "Copying resources..."
-        # Copy image assets and properties from resources to build output
-        cp src/main/resources/*.png build/classes/ 2>/dev/null || true
-        cp src/main/resources/*.properties build/classes/ 2>/dev/null || true
+        # Copy all images, configuration files, XMLs, and SQL files recursively
+        cp -r src/main/resources/* build/classes/ 2>/dev/null || true
     else
         echo "Compilation failed!"
         exit 1
@@ -40,6 +39,9 @@ package() {
     # Remove META-INF signature and manifest files to prevent security/digest validation errors
     rm -rf build/deps/META-INF/*.SF build/deps/META-INF/*.DSA build/deps/META-INF/*.RSA build/deps/META-INF/MANIFEST.MF 2>/dev/null || true
     
+    # Remove module-info.class to prevent future javac modular compilation issues
+    rm -f build/deps/module-info.class 2>/dev/null || true
+    
     # Copy all extracted dependencies into compile output directory
     cp -r build/deps/* build/classes/ 2>/dev/null || true
     
@@ -55,7 +57,7 @@ package() {
 run() {
     compile
     echo "Launching SynapTix Broadband ISP Management System..."
-    java -cp build/classes:flatlaf-3.1.1.jar:postgresql-42.6.0.jar:rs2xml.jar:itext-2.1.7.jar:HikariCP-4.0.3.jar:slf4j-api-1.7.30.jar:slf4j-simple-1.7.30.jar:jfreechart-1.5.3.jar:javax.mail-1.6.2.jar:activation-1.1.1.jar com.synaptix.isp.Home
+    java -cp build/classes:flatlaf-3.1.1.jar:postgresql-42.6.0.jar:rs2xml.jar:itext-2.1.7.jar:HikariCP-4.0.3.jar:slf4j-api-1.7.30.jar:logback-classic-1.2.11.jar:logback-core-1.2.11.jar:flyway-core-8.5.13.jar:jfreechart-1.5.3.jar:javax.mail-1.6.2.jar:activation-1.1.1.jar com.synaptix.isp.Home
 }
 
 test_suite() {
