@@ -51,21 +51,10 @@ A premium, enterprise-grade desktop application built in Java Swing for Internet
 
 ## 🚀 Installation & Setup
 
-### Step 1: Spin up PostgreSQL Database (Recommended Docker Command)
-Ensure PostgreSQL is running locally on port **`5435`** (default config):
+### Step 1: Spin up PostgreSQL Database (Docker Compose)
+Start the PostgreSQL container, which automatically initializes database schemas and mock records on port **`5435`**:
 ```bash
-docker run -d \
-  -p 5435:5432 \
-  -e POSTGRES_DB=isp \
-  -e POSTGRES_USER=postgres \
-  -e POSTGRES_PASSWORD=postgres \
-  --name isp-postgres \
-  postgres:15
-```
-
-To seed the initial schema and mock data, run:
-```bash
-docker exec -i isp-postgres psql -U postgres -d isp < isp_postgres.sql
+docker compose up -d
 ```
 
 ---
@@ -90,21 +79,25 @@ mail.smtp.password=your-16-digit-app-password
 ---
 
 ### Step 3: Build & Launch
-Use the helper script `build.sh` to compile, package, and execute the app:
+Use the helper script `build.sh` to compile, package, test, and execute the app:
 
 * **Compile source files & copy resources:**
   ```bash
   ./build.sh compile
   ```
+* **Run the automated unit tests:**
+  ```bash
+  ./build.sh test
+  ```
 * **Compile and run the GUI:**
   ```bash
   ./build.sh run
   ```
-* **Package into a self-contained executable JAR:**
+* **Package into a self-contained executable fat JAR:**
   ```bash
   ./build.sh package
   ```
-  *(Produces output jar inside `dist/ISP.jar`)*
+  *(Produces output runnable fat jar inside `dist/ISP.jar`)*
 
 ---
 
