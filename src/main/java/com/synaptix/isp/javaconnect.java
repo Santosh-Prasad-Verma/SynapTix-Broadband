@@ -49,7 +49,10 @@ public class javaconnect {
 
             // Run Flyway database migrations
             logger.info("Executing Flyway database migrations...");
-            Flyway flyway = Flyway.configure().dataSource(dataSource).load();
+            Flyway flyway = Flyway.configure()
+                .dataSource(dataSource)
+                .baselineOnMigrate(true)
+                .load();
             flyway.migrate();
             logger.info("Database migrations completed successfully.");
         } catch (Exception e) {
