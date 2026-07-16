@@ -84,7 +84,7 @@ CREATE TABLE `customer` (
 --
 
 INSERT INTO `customer` (`ID`, `Name`, `Contact`, `Address`, `Plan`, `Sex`, `Purpose`) VALUES
-(11, 'nitish', '775z5df', 'csd', '10net', 'MALE', 'BUSINESS'),
+(11, 'rahul', '775z5df', 'csd', '10net', 'MALE', 'BUSINESS'),
 (12, 'rajas', '465165', 'dsfds', '100net', 'MALE', 'INDIVIDUAL');
 
 -- --------------------------------------------------------

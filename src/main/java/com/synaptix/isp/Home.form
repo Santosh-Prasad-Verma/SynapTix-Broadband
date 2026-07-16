@@ -126,7 +126,7 @@
             <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="ff" green="33" red="33" type="rgb"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="VESIT BROADBAND"/>
+            <Property name="text" type="java.lang.String" value="SYNAPTIX BROADBAND"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel2">
@@ -312,7 +312,7 @@
             <Component class="javax.swing.JLabel" name="jLabel7">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="2" name="C:\Users\nitish\Documents\NetBeansProjects\Internet-Service-Provider\icons\account.png"/>
+                  <Image iconType="3" name="/account.png"/>
                 </Property>
               </Properties>
             </Component>
@@ -323,7 +323,7 @@
         <Component class="javax.swing.JLabel" name="jLabel9">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="2" name="C:\Users\nitish\Documents\NetBeansProjects\Internet-Service-Provider\icons\logomain.png"/>
+              <Image iconType="3" name="/logomain.png"/>
             </Property>
           </Properties>
         </Component>

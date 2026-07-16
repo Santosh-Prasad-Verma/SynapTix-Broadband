@@ -47,7 +47,7 @@ CREATE TABLE customer (
 
 -- Seed customer
 INSERT INTO customer (ID, Name, Contact, Address, Plan, Sex, Purpose, email) VALUES
-(11, 'nitish', '775z5df', 'csd', '10net', 'MALE', 'BUSINESS', 'nitish@example.com'),
+(11, 'rahul', '775z5df', 'csd', '10net', 'MALE', 'BUSINESS', 'rahul@example.com'),
 (12, 'rajas', '465165', 'dsfds', '100net', 'MALE', 'INDIVIDUAL', 'rajas@example.com');
 
 --
